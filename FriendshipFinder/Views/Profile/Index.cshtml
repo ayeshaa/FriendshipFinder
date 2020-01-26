@@ -1,0 +1,291 @@
+﻿@model IEnumerable<FriendshipFinder.Models.ViewModel.PostUser>
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_ProfileLayout.cshtml";
+}
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.4.0/clipboard.min.js"></script>
+<script type='text/javascript' src='//code.jquery.com/jquery-1.10.1.js'></script>
+
+@if (ViewData["Exists"] != null)
+{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#myExistModal").modal('show');
+        });
+    </script>
+    <div class="modal fade modal-danger" id="myExistModal" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title" style="color:#383838">Alert!</h4>
+                </div>
+                <div class="modal-body">
+                    <p>@ViewData["Exists"]</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline pull-right" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<div class="col-md-7">
+    <!-- Post Create Box
+    ================================================= -->
+    <div class="create-post">
+        <div class="row">
+            <form role="form" method="post" action="/Profile/Index" enctype="multipart/form-data">
+                <div class="col-md-7 col-sm-7" style="margin-top:9px">
+                    <div class="form-group">
+                        <img src="~/Uploads/Profile/@Session["ProfileImage"]" alt="" class="profile-photo-md" />
+                        <textarea name="texts" id="exampleTextarea" cols="30" rows="1" class="form-control" placeholder="Description" aria-required="true"></textarea>
+                    </div>
+                </div>
+                <div class="col-md-5 col-sm-5">
+                    <div class="tools">
+                        <ul class="publishing-tools list-inline">
+                            <label for="files" style="padding-right:10px">
+                                <i class="icon ion-images" onmouseover="this.style.color = '#383838'" onmouseout="this.style.color = '#d11b0b'" style="font-size: 40px;cursor: pointer"></i>
+                            </label>
+                            <input type="file" multiple="multiple" style="display:none" name="files" id="files" onchange="readURL(this)" accept="image/*" />
+                            <label for="videos" style="padding-right:10px">
+                                <i class="icon ion-ios-videocam" onmouseover="this.style.color = '#383838'" onmouseout="this.style.color = '#d11b0b'" style="font-size: 40px;cursor: pointer"></i>
+                            </label>
+                            <input type="file" multiple="multiple" style="display:none" name="videos" id="videos" onchange="readURL(this)" accept="image/*" />
+                        </ul>
+                        <input type="submit" style="margin-top:9px" value="Publish" class="btn btn-primary pull-right" />
+                    </div>
+                </div>
+            </form>
+            @if (ViewData["ERROR"] != null)
+            {
+                <p style="color:red">@ViewData["ERROR"]</p>
+            }
+        </div>
+        <output id="result" />
+    </div>
+    @{
+        int i = -1;
+    }
+    @foreach (var item in Model)
+    {
+        i++;
+        <div class="post-content">
+            <!--Post Date-->
+            <div class="post-date hidden-xs hidden-sm">
+                <p class="text-grey" style="color:white">@Convert.ToString(string.Format("{0:dd/MMM/yyyy}", item.PostedOn))</p>
+            </div>
+            @if (item.video != null && item.Photo != null)
+            {
+                string[] images = item.Photo.Split(',');
+                <video controls>
+                    <source src="~/Uploads/Videos/@Html.DisplayFor(modelItem => item.video)" alt="post-image" class="img-responsive post-image" type="video/mp4">
+                </video>
+                for (int img = 0; img < images.Length; img++)
+                {
+                    <img src="~/Uploads/Images/@images[img]" alt="post-image" class="img-responsive smallImages" />
+                }
+            }
+            else if (item.Photo != null)
+            {
+                string[] images = item.Photo.Split(',');
+                for (int img = 0; img < images.Length; img++)
+                {
+                    if (img == 0)
+                    {
+                        <img src="~/Uploads/Images/@images[img]" alt="post-image" class="img-responsive post-image" />
+                    }
+                    else
+                    {
+                        <img src="~/Uploads/Images/@images[img]" alt="post-image" class="img-responsive smallImages" />
+                    }
+                }
+            }
+            else if (item.video != null)
+            {
+                <video controls>
+                    <source src="~/Uploads/Videos/@Html.DisplayFor(modelItem => item.video)" alt="post-image" class="img-responsive post-image" type="video/mp4">
+                </video>
+            }
+            <div class="post-container">
+                <img src="~/Uploads/Profile/@Html.DisplayFor(modelItem => item.ProfilePicture)" alt="user" class="profile-photo-md pull-left" />
+                <div class="post-detail">
+                    <div class="user-info">
+                        <h5><a href="#" class="profile-link capital">@Html.DisplayFor(modelItem => item.Name)</a></h5>
+                        <p class="text-muted" style="color:#847a67">@Html.DisplayFor(modelItem => item.PostedOn)</p>
+                    </div>
+                    @{
+                        var postID = "postID" + @item.PostID;
+                        var userID = "uId" + @item.UserID;
+                        var like = "like" + @item.PostID;
+                        var dislike = "dislike" + @item.PostID;
+                        var TotalLikes = "TotalLikes" + @item.PostID;
+                        var TotalDislikes = "TotalDislikes" + @item.PostID;
+                    }
+                    <div class="reaction">
+                        <input type="text" id="@postID" value="@item.PostID" hidden />
+                        <input type="text" id="@userID" value="@Session["Login"]" hidden />
+                        <a class="btn text-green"><button type="button" id="@like"><i class="icon ion-thumbsup"></i></button><span style="font-size:15px" id="@TotalLikes">&nbsp; @item.Likes</span></a>
+                        <a class="btn text-red"><button type="button" id="@dislike"><i class="fa fa-thumbs-down"></i></button><span style="font-size:15px" id="@TotalDislikes">&nbsp; @item.Dislikes</span></a>
+                    </div>
+
+                    <script>
+                        $(function () {
+
+                            $("#@like").click(function () {
+                                var post1 = $("#@postID").val();
+                                var user1 = $("#@userID").val();
+                                $.ajax({
+                                    url: "@Url.Action("Likes","Home")",
+                                    type: 'GET',
+                                    data: {
+                                        post: post1, user: user1,
+                                    },
+                                    contentType: "json",
+                                    success: function (response) {
+                                        $('#@TotalLikes').text(response[@i].Likes);
+                                    },
+                                    error: function (response) {
+                                        alert("error");
+                                        alert(response.responseText + "e");
+                                    }
+                                });
+                            });
+
+                            $("#@dislike").click(function () {
+                                var post1 = $("#@postID").val();
+                                var user1 = $("#@userID").val();
+                                $.ajax({
+                                    url: "@Url.Action("DisLikes", "Home")",
+                                    type: 'GET',
+                                    data: {
+                                        post: post1, user: user1,
+                                    },
+                                    contentType: "json",
+                                    success: function (response) {
+                                        $('#@TotalDislikes').text(response[@i].Dislikes);
+                                    },
+                                    error: function (response) {
+                                        alert("error");
+                                        alert(response.responseText + "e");
+                                    }
+                                });
+                            });
+                        });
+                    </script>
+
+                    <div class="line-divider"></div>
+                    <div class="post-text">
+                        <p>@Html.DisplayFor(modelItem => item.Description)</p>
+                    </div>
+                    <div class="line-divider"></div>
+                    @{
+                        var comments = "comments" + @item.PostID;
+                    }
+                    <div id="@comments">
+                        @Html.Action("DisplayComment", "Home", new { id = item.PostID })
+                    </div>
+
+                    <div class="post-comment">
+                        @{
+                            var textComment = "textcomment" + @item.PostID;
+                        }
+                        <img src="~/Uploads/Profile/@Session["ProfileImage"]" alt="" class="profile-photo-sm" />
+                        <input type="text" id="@textComment" name="comment" class="form-control" placeholder="Post a comment" required>
+                        <input type="text" id="@postID" name="PostId" value="@Html.DisplayFor(modelItem => item.PostID)" hidden="hidden" />
+                        <input type="text" id="@userID" name="UserId" value="@Session["Login"]" hidden="hidden" />
+                        <input type="button" style="margin:7px" id="@item.PostID" value="Comment" class="btn btn-primary" />
+                    </div>
+                </div>
+                <script>
+                    $(document).ready(function () {
+                        var postid = $("#@postID").val();
+                        $("#@item.PostID").click(function () {
+                            var post = $("#@postID").val();
+                            var user = $("#@userID").val();
+                            var detail = $("#@textComment").val();
+                            var url = "/Home/Comment";
+                            $.post(url, {
+                                Commentpost: post, CommentUser: user, description: detail,
+                            }, function (response) {
+                                $("#@comments").load('/Home/DisplayComment/' + postid);
+                                $("#@textComment").val('');
+                            });
+
+                        });
+                    });
+                </script>
+                <script>
+                    setInterval(function(){
+                        var postid = $("#@postID").val();
+                        $("#@comments").load('/Home/DisplayComment/@item.PostID');
+                    }, 5000);
+                </script>
+            </div>
+        </div>
+                            }
+</div>
+
+<script type="text/javascript">
+
+    window.onload = function () {
+        //Check File API support
+        if (window.File && window.FileList && window.FileReader) {
+            var filesInput = document.getElementById("files");
+            var videosInput = document.getElementById("videos");
+            filesInput.addEventListener("change", function (event) {
+                var files = event.target.files; //FileList object
+                var output = document.getElementById("result");
+                for (var i = 0; i < files.length; i++) {
+                    var file = files[i];
+                    //Only pics
+                    if (!file.type.match('image'))
+                        continue;
+                    var picReader = new FileReader();
+                    picReader.addEventListener("load", function (event) {
+                        var picFile = event.target;
+                        var div = document.createElement("div");
+                        div.style = "display:inline-block;margin:5px";
+                        div.innerHTML = "<img class='thumbnail' style='height:100px;width:100px' src='" + picFile.result + "'" +
+                                "title='" + picFile.name + "'/>";
+                        output.insertBefore(div, null);
+                    });
+                    //Read the image
+                    picReader.readAsDataURL(file);
+                }
+            });
+            videosInput.addEventListener("change", function (event) {
+                var files = event.target.files; //FileList object
+                var output = document.getElementById("result");
+                for (var i = 0; i < files.length; i++) {
+                    var file = files[i];
+                    //Only pics
+                    if (!file.type.match('video'))
+                        continue;
+                    var picReader = new FileReader();
+                    picReader.addEventListener("load", function (event) {
+                        var picFile = event.target;
+                        var div = document.createElement("div");
+                        div.style = "display:inline-block;margin:5px";
+                        div.innerHTML = "<video class='thumbnail' style='height:100px;width:100px' src='" + picFile.result + "'" +
+                                "title='" + picFile.name + "'/>";
+                        output.insertBefore(div, null);
+                    });
+                    //Read the image
+                    picReader.readAsDataURL(file);
+                }
+            });
+
+        }
+        else {
+            console.log("Your browser does not support File API");
+        }
+    }
+
+</script>

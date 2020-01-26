@@ -1,0 +1,13 @@
+﻿@model IEnumerable<FriendshipFinder.Models.ViewModel.CommentUser>
+
+@{
+    Layout = null;
+}
+
+@foreach (var item in Model)
+{
+    <div id="post-comment" class="post-comment">
+        <img src="~/Uploads/Profile/@Html.DisplayFor(modelItem => item.ProfilePicture)" alt="" class="profile-photo-sm" />
+        <p><a href="#" class="profile-link capital">@Html.DisplayFor(modelItem => item.Name)</a>: @Html.DisplayFor(modelItem => item.Description)</p>
+    </div>
+}

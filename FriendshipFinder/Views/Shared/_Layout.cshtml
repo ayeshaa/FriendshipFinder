@@ -1,0 +1,153 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<!-- Mirrored from thunder-team.com/friend-finder/newsfeed.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 27 Feb 2017 12:45:56 GMT -->
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="This is social network html5 template available in themeforest......" />
+    <meta name="keywords" content="Social Network, Social Media, Make Friends, Newsfeed, Profile Page" />
+    <meta name="robots" content="index, follow" />
+    <title>Gerard & Jenny</title>
+
+    <!-- Stylesheets
+    ================================================= -->
+    <link rel="stylesheet" href="~/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/style.css" />
+    <link rel="stylesheet" href="~/css/ionicons.min.css" />
+    <link rel="stylesheet" href="~/css/font-awesome.min.css" />
+    <link href="~/css/emoji.css" rel="stylesheet">
+
+    <!--Favicon-->
+    <link rel="shortcut icon" type="image/png" href="~/images/paintBrush.png" />
+</head>
+<body>
+
+    <!-- Header
+    ================================================= -->
+    <header id="header">
+        <nav class="navbar navbar-default navbar-fixed-top menu">
+            <div class="container">
+
+                <!-- Brand and toggle get grouped for better mobile display -->
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="index-register.html"><img src="~/images/LoveIcon.png" style="width:35px" alt="logo" /></a>
+                </div>
+
+                <!-- Collect the nav links, forms, and other content for toggling -->
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                    <ul class="nav navbar-nav navbar-right main-menu">
+                        <li><a href="/Profile/Introduction" style="color:#d11b0b" class="text-maroon">Home</a></li>
+                        <li><a href="/Home/Index" style="color:#d11b0b" class="text-maroon">Newsfeed</a></li>
+                        <li><a href="/Profile/Index" style="color:#d11b0b" class="text-maroon">Profile</a></li>
+                    </ul>
+                </div><!-- /.navbar-collapse -->
+            </div><!-- /.container -->
+        </nav>
+    </header>
+    <!--Header End-->
+
+    <div id="page-contents">
+        <div class="container">
+            <div class="row">
+
+                <!-- Newsfeed Common Side Bar Left
+                ================================================= -->
+                <div class="col-md-3 static">
+                    <div class="profile-card">
+                        <img src="~/Uploads/Profile/@Session["ProfileImage"]" alt="user" class="profile-photo" />
+                        <h5><a href="#" style="color:#6d6e71" class="capital">@Session["Name"]</a></h5>
+                    </div><!--profile card ends-->
+                    <ul class="nav-news-feed" id="chat-block">
+                        <li><i class="icon ion-ios-home"></i><div>@Html.ActionLink("Home", "Introduction", "Profile")</div></li>
+                        <li><i class="icon ion-ios-paper"></i><div>@Html.ActionLink("Newsfeed", "Index", "Home")</div></li>
+                        <li><i class="icon ion-ios-people"></i><div>@Html.ActionLink("Profile", "Index", "Profile")</div></li>
+                        <li><i class="icon ion-android-exit" style="color:rgba(255, 0, 0, 0.58)"></i><div><a href="#" data-toggle="modal" data-target="#myModal">Logout</a></div></li>
+                    </ul><!--news-feed links ends-->
+                </div>
+
+                @RenderBody()
+
+                <!-- Newsfeed Common Side Bar Right
+                ================================================= -->
+                <div class="col-md-2 static" id="sticky-sidebar" style="background-color:rgba(255, 255, 255, 0.8);border-radius:4px;padding:20px">
+                    <div class="suggestions">
+                        <h4 class="grey" style="color:#6d6e71">Recent Posts</h4>
+
+                        @Html.Action("RecentPosts", "Home", new { id = Session["Login"] })
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="myModal" role="dialog" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" style="border-bottom: 3px solid #ed4849;text-align: center">
+                    <img src="~/images/users/heart.png" style="width:10%;vertical-align: middle" />
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p style="text-align:center;font-weight:bold">Gerard & Jenny</p>
+                    @*<p style="text-align:center">I'm glad that you & me are us<img src="~/images/HeartSmall.png" style="width:30px" /></p>*@
+                    <p style="text-align:center;color:#ed4849">Are you sure?</p>
+                </div>
+                <div class="modal-footer" style="text-align: center">
+                    <button type="button" class="btn btn-outline" onclick="location.href='@Url.Action("Logout", "User")'" data-dismiss="modal" style="text-align:center;color: #fff;background-color: #ed4849;border-color: #ed4849">Logout</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+    </div>
+
+    <!-- Footer
+    ================================================= -->
+    <footer id="footer">
+        <div class="container">
+            <div class="row">
+                <div class="footer-wrapper">
+                    <div class="col-md-4 col-sm-4">
+                        <a href="#"><img src="~/images/LoveIcon.png" style="width:50px;margin-left:62.5px" alt="" class="footer-logo" /></a>
+                        <h3>Gerard & Jenny</h3>
+                    </div>
+                    <div class="col-md-3 col-sm-3">
+                    </div>
+                    <div class="col-md-2 col-sm-2">
+                    </div>
+                    <div class="col-md-3 col-sm-3">
+                        <img src="~/images/heartballoon.png" style="width:50%" class="img-responsive" />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="copyright">
+            <p>Gerard&Jenny © 2017. All rights reserved</p>
+        </div>
+    </footer>
+
+    <!--preloader-->
+    <!--<div id="spinner-wrapper">
+      <div class="spinner"></div>
+    </div>--!>
+
+    <!-- Scripts
+    ================================================= -->
+    <script src="~/js/jquery-3.1.1.min.js"></script>
+    <script src="~/js/bootstrap.min.js"></script>
+    <script src="~/js/jquery.sticky-kit.min.js"></script>
+    <script src="~/js/jquery.scrollbar.min.js"></script>
+    <script src="~/js/script.js"></script>
+</body>
+
+<!-- Mirrored from thunder-team.com/friend-finder/newsfeed.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 27 Feb 2017 12:47:54 GMT -->
+</html>
